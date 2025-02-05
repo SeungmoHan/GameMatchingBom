@@ -7,12 +7,12 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="팀뽑기툴" Height="500" Width="1000">
+        Title="팀뽑기툴" Height="600" Width="1300">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"></ColumnDefinition>
-            <ColumnDefinition Width="1*"></ColumnDefinition>
-            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="5*"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid Column="0">
             <Grid>
@@ -31,7 +31,7 @@
                 <ListView Grid.Row="1" x:Name="lvRemainPeople" ItemsSource="{Binding User}">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="버림받은 사람" DisplayMemberBinding="{Binding NickName}"></GridViewColumn>
+                            <GridViewColumn Header="버림받은 사람" DisplayMemberBinding="{Binding Name}"></GridViewColumn>
                         </GridView>
                     </ListView.View>
                 </ListView>
@@ -44,28 +44,38 @@
                 <RowDefinition Height="1*"></RowDefinition>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
-                <DockPanel HorizontalAlignment="Center" Width="200">
-                    <Button Content="추가" Click="btnAddPeople" Background="DarkGray" HorizontalAlignment="Center"></Button>
-                    <Button Content="제거" Click="btnRemovePeople" Background="DarkGray" HorizontalAlignment="Center"></Button>
+                <DockPanel HorizontalAlignment="Center" Width="340">
+                    <Button Content="추가(영구)" Click="btnCreateNewUser" Background="DarkGray" HorizontalAlignment="Center"></Button>
+                    <Button Content="리로드" Click="btnReloadMember" Background="DarkGray" HorizontalAlignment="Center"></Button>
                     <Button Content="리셋" Click="btnResetPeople" Background="DarkGray" HorizontalAlignment="Center"></Button>
                 </DockPanel>
                 <TextBox Text="이름 추가" x:Name="tbNameAdd" GotFocus="tbNameGotFocus"></TextBox>
             </StackPanel>
             <DataGrid x:Name="dgPeople"  Grid.Row="1" 
-                      ItemsSource="User"
                       IsReadOnly="True" 
                       SelectionMode="Single"
                       PreviewMouseDoubleClick="dgPreviewMouseDoubleClick" 
                       PreviewMouseDown="dgPreviewMouseDown">
             </DataGrid>
-            <Button Grid.Row="2" Content="매칭 시작" Width="180" Height="40" Click="btnShuffleClick">
-            </Button>
+            <DockPanel Grid.Row="2">
+                <Button Content="매칭 시작(노라인)" Width="170" Margin="10" Height="40" Click="btnShuffleClickWithoutLine">
+                </Button>
+                <Button Content="매칭 시작(라인)" Width="170" Margin="10" Height="40" Click="btnShuffleClickWithLine">
+                </Button>
+            </DockPanel>
+
         </Grid>
         <StackPanel Grid.Column="2">
             <TextBlock Width="200" Height="50" Text="검색하세염" FontSize="30" FontWeight="ExtraBold" TextAlignment="Center"></TextBlock>
-            <TextBox x:Name="txtSearch" Width="200" KeyUp="txtSearchKeyUp" />
-            <ListBox x:Name="lstSuggestions" Width="200" Height="300" 
-                     Visibility="Collapsed" MouseDoubleClick="lstSuggestionsMouseDoubleClick"/>
+            <TextBox x:Name="txtSearch" Width="300" KeyUp="txtSearchKeyUp" />
+            <ListBox x:Name="lstSuggestions" Width="300" Height="450" Visibility="Collapsed" MouseDoubleClick="lstSuggestionsMouseDoubleClick">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="삭제" Click="DeleteMenuItem_Click" />
+                        <MenuItem Header="편집" Click="EditMenuItem_Click" />
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+            </ListBox>
         </StackPanel>
     </Grid>
 </hc:Window>
