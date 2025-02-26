@@ -31,10 +31,12 @@ namespace Test
         private ObservableCollection<string> logViews { get; set; }
         private DispatcherTimer timer { get; set; }
 
+
         public MainWindow()
         {
             InitializeComponent();
             MatchingManager.Instance.Init();
+            Task.Run(PeerlessManager.Instance.InitChampions);
             Stash.LogInfo("MemberLoad Clear");
             MainContent.Content = new HomeView(this);  // 홈 화면
             RefreshView();
@@ -69,6 +71,11 @@ namespace Test
         {
             Stash.Clear();
             RefreshView();
+        }
+
+        private void BtnPeerlessViewClicked(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new PeerlessView(this);
         }
     }
 }
