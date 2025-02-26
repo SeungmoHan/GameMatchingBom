@@ -83,6 +83,7 @@ namespace Test
                     return;
                 }
                 PeerlessManager.Instance.AddSelectedChampion(selectedItem);
+                tbChampionSearchBox.Text = string.Empty;
                 RefreshView();
             }
         }
@@ -93,6 +94,7 @@ namespace Test
             {
                 int choiceChampionCount = int.Parse(cbPeopleCountBox.Text);
                 PeerlessManager.Instance.RemoveSelectedChampion(selectedItem);
+                tbChampionSearchBox.Text = string.Empty;
                 RefreshView();
             }
         }
@@ -101,6 +103,7 @@ namespace Test
         {
             RandomPickUIFlag = true;
             PeerlessManager.Instance.CommitSelectedChampion();
+            tbChampionSearchBox.Text = string.Empty;
             RefreshView();
         }
 
@@ -108,6 +111,7 @@ namespace Test
         {
             RandomPickUIFlag = true;
             PeerlessManager.Instance.RevertSelectedChampion();
+            tbChampionSearchBox.Text = string.Empty;
             RefreshView();
         }
 
@@ -117,6 +121,7 @@ namespace Test
             int pickCount = int.Parse(cbPeopleCountBox.Text);
             int currentPickedCount = PeerlessManager.Instance.SelectedChampionInThisGame.Count;
             PeerlessManager.Instance.PickRandomChampion(pickCount - currentPickedCount);
+            tbChampionSearchBox.Text = string.Empty;
             RefreshView();
         }
 
