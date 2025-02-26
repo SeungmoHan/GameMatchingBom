@@ -99,7 +99,7 @@ namespace Test
                 var vsCodePath = Path.GetFullPath("%UserProfile%\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe");
                 Process.Start(vsCodePath, fullPath);
             }
-            catch (Exception e)
+            catch
             {
                 Process.Start("notepad.exe", fullPath);
             }

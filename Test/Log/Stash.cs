@@ -7,38 +7,6 @@ using HandyControl.Tools.Extension;
 
 namespace Test.Log
 {
-    public enum Level
-    {
-        Info, Error
-    }
-
-    public class Archive
-    {
-        public Level logLevl { get; set; } = Level.Info;
-        public string who { get; set; } = string.Empty;
-        public string data { get; set; } = string.Empty;
-        public DateTime time { get; set; } = DateTime.Now;
-
-        public Archive(Level logLevl, string who, string data)
-        {
-            this.logLevl = logLevl;
-            this.who = who;
-            this.data = data;
-            this.time = DateTime.Now;
-        }
-
-        public string ToString()
-        {
-            StringBuilder sb = new();
-            sb.AppendLine($"[{time:MM/dd/yyyy}-{time:hh:mm:ss}][{logLevl}]");
-            if (false == who.IsNullOrEmpty())
-                sb.AppendLine($"[{who}]:[{data}]");
-            else
-                sb.AppendLine($"[{data}]");
-            return sb.ToString();
-        }
-    }
-
     public class Stash
     {
         private static List<Archive> StashLogView { get; set; } = new();
@@ -61,12 +29,21 @@ namespace Test.Log
         private static void AddLog(Archive archive)
         {
             if (StashLogView.Count >= 20)
+            {
+                Task.Run(async ()  => { await File.WriteAsync(StashLogView[0]); });
                 StashLogView.RemoveAt(0);
+            }
             StashLogView.Add(archive);
         }
 
         public static void Clear()
         {
+            StashLogView.Clear();
+        }
+
+        public static void Flush()
+        {
+            File.WriteSync(StashLogView.ToList());
             StashLogView.Clear();
         }
     }

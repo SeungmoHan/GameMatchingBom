@@ -46,13 +46,25 @@ namespace Test
                 var remainedChampion = PeerlessManager.Instance.RemainedChampions.OrderBy(o => o.ChampionNameKor).ToList();
                 var inThisGame = PeerlessManager.Instance.SelectedChampionInThisGame.OrderBy(o => o.ChampionNameKor).ToList();
                 var usedChampion = PeerlessManager.Instance.UsedChampions.OrderBy(o => o.ChampionNameKor).ToList();
+
+                var remainCount = remainedChampion.Count;
+                var inThisGameCount = inThisGame.Count;
+                var usedCount = usedChampion.Count;
+
+                if (false == string.IsNullOrEmpty(tbChampionSearchBox.Text))
+                {
+                    remainedChampion = remainedChampion.Where(item => item.ChampionNameKor.Contains(tbChampionSearchBox.Text)).ToList();
+                    inThisGame = inThisGame.Where(item => item.ChampionNameKor.Contains(tbChampionSearchBox.Text)).ToList();
+                    usedChampion = usedChampion.Where(item => item.ChampionNameKor.Contains(tbChampionSearchBox.Text)).ToList();
+                }
+
                 AllChampionListView.ItemsSource = remainedChampion;
                 ChampionListViewInThisGame.ItemsSource = inThisGame;
                 UsedChampionsListView.ItemsSource = usedChampion;
 
-                tbNotSelect.Text = $"Not Selected({remainedChampion.Count})";
-                tbInThisGame.Text = $"In This Game({inThisGame.Count})";
-                tbAlreadyUsed.Text = $"Used({usedChampion.Count})";
+                tbNotSelect.Text = $"Not Selected({remainCount})";
+                tbInThisGame.Text = $"In This Game({inThisGameCount})";
+                tbAlreadyUsed.Text = $"Used({usedCount})";
             }
             tbCurrentCount.Text = currentCount.ToString();
             cbPeopleCountBox.Text = PeerlessManager.Instance.SelectedCount.ToString();
@@ -117,6 +129,11 @@ namespace Test
                 pickCount = PeerlessManager.Instance.SelectedChampionInThisGame.Count;
             }
             PeerlessManager.Instance.SelectedCount = pickCount;
+            RefreshView();
+        }
+
+        private void ChampionSearchChanged(object sender, TextChangedEventArgs e)
+        {
             RefreshView();
         }
     }

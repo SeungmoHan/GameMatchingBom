@@ -11,6 +11,18 @@
             <RowDefinition Height="1*"></RowDefinition>
             <RowDefinition Height="10*"></RowDefinition>
         </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <DockPanel Grid.Row="1" Grid.Column="2">
+                <TextBlock Text="챔피언 검색" Margin="5" Foreground="White" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15" FontWeight="Bold"></TextBlock>
+                <TextBox x:Name="tbChampionSearchBox" Foreground="Black" Margin="5" TextChanged="ChampionSearchChanged"></TextBox>
+            </DockPanel>
+        </Grid>
+
         <TextBlock Grid.Row="0" x:Name="tbCurrentCount" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
         <Grid  Grid.Row="1">
             <Grid.ColumnDefinitions>

@@ -143,7 +143,21 @@ namespace Test
 
             // 검색어에 맞는 항목 필터링
             nameFilter.Clear();
+            var curUser = MatchingManager.Instance.CurrentUsers;
             var results = memberNickNameStrings.Where(item => item.ToLower().Contains(query)).ToList();
+
+            List<string> removeItem = new();
+            foreach (var result in results)
+            {
+                foreach (var user in curUser)
+                {
+                    if (result == $"{user.Name}-{user.NickName}")
+                        removeItem.Add(result);
+                }
+            }
+            foreach(var item in removeItem)
+                results.Remove(item);
+
 
             if (results.Any())
             {

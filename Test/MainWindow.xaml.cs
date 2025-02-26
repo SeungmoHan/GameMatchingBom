@@ -39,6 +39,7 @@ namespace Test
             Task.Run(PeerlessManager.Instance.InitChampions);
             Stash.LogInfo("MemberLoad Clear");
             MainContent.Content = new HomeView(this);  // 홈 화면
+            Closing += (a, b) => { Log.Stash.Flush(); };
             RefreshView();
             timer = new();
             timer.Interval = TimeSpan.FromSeconds(0.3);
