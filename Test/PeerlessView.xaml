@@ -46,6 +46,10 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+            <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Background="DarkGray" Content="=빼기=" FontWeight="Bold" Click="BtnRemoveUsedCharacter" VerticalAlignment="Center" Margin="10,0" Width="100" Height="40"></Button>
+                <Button Background="DarkGray" Content="=리셋=" FontWeight="Bold" Click="BtnRevertUsedCharacter" VerticalAlignment="Center" Margin="10,0" Width="100" Height="40"></Button>
+            </StackPanel>
             <TextBlock Grid.Row="0" Grid.Column="1" x:Name="tbInThisGame" Text="In This Game" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" FontWeight="Bold"></TextBlock>
             <ListView Grid.Row="1" Grid.Column="1" x:Name="ChampionListViewInThisGame" MouseDoubleClick="RemoveUsedChampionInThisGame_dblClicked" Margin="10">
                 <ListView.ItemTemplate>
@@ -68,7 +72,6 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-
             <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Background="DarkGray" Content="=확정=" FontWeight="Bold" Click="BtnCommitCharacters" VerticalAlignment="Center" Margin="10,0" Width="100" Height="40"></Button>
                 <Button Background="DarkGray" Content="=초기화=" FontWeight="Bold" Click="BtnRevertCharacters" VerticalAlignment="Center" Margin="10,0" Width="100" Height="40"></Button>

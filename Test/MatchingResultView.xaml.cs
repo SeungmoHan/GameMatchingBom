@@ -26,28 +26,25 @@ namespace Test
             InitializeComponent();
             this.parent = parent;
 
-            if (MatchingManager.Instance.lastMatchResult != null)
+            // 여기서는 view에 뿌려주기만 하면끝
+            var matchResult = MatchingManager.Instance.GetLastMatchResult();
+            if (matchResult != null && matchResult.Matches.Count > 0)
             {
-                if (MatchingManager.Instance.lastMatchResult.Matches.Count != 0)
-                {
-                    lvTeamResult.ItemsSource = MatchingManager.Instance.lastMatchResult.Matches;
-                }
-                else
-                {
-                    tbMatchingResultEmpty.Visibility = Visibility.Visible;
-                }
-                lvRemainPeople.ItemsSource = MatchingManager.Instance.lastMatchResult.RemainUsers.nonMatchedUser;
+                tbMatchingResultEmpty.Visibility = Visibility.Hidden;
+                lvTeamResult.ItemsSource = matchResult.Matches;
+                lvRemainPeople.ItemsSource = matchResult.RemainUsers.nonMatchedUser;
             }
             else
             {
                 tbMatchingResultEmpty.Visibility = Visibility.Visible;
+                lvRemainPeople.ItemsSource = new List<string>();
             }
         }
 
         public void ShowMatchInfo()
         {
             // 여기서는 view에 뿌려주기만 하면끝
-            var matchResult = MatchingManager.Instance.MatchResult;
+            var matchResult = MatchingManager.Instance.CreateMatchResult();
             if (matchResult.Matches.Count == 0)
             {
                 tbMatchingResultEmpty.Visibility = Visibility.Visible;
@@ -63,7 +60,7 @@ namespace Test
         private void BtnRematchingClicked(object sender, RoutedEventArgs e)
         {
             // 여기서는 view에 뿌려주기만 하면끝
-            var matchResult = MatchingManager.Instance.MatchResult;
+            var matchResult = MatchingManager.Instance.CreateMatchResult();
             if (matchResult.Matches.Count == 0)
             {
                 tbMatchingResultEmpty.Visibility = Visibility.Visible;

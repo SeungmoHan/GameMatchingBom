@@ -141,5 +141,49 @@ namespace Test
         {
             RefreshView();
         }
+
+        private void BtnRevertUsedCharacter(object sender, RoutedEventArgs e)
+        {
+            var result = HandyControl.Controls.MessageBox.Show($"진짜 삭제하는거 맞지?", "경고!", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                result = HandyControl.Controls.MessageBox.Show($"다시한번 묻는다?", "경고!", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    HandyControl.Controls.MessageBox.Show($"네 삭제하겠습니다", "낙장불입");
+                    PeerlessManager.Instance.RevertUsedItems();
+                }
+            }
+
+            RefreshView();
+        }
+
+        private void BtnRemoveUsedCharacter(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = UsedChampionsListView.SelectedItems;
+            List<ChampionInfo> items = new();
+            foreach (var item in selectedItems)
+            {
+                ChampionInfo? champ = item as ChampionInfo;
+                if (null == champ)
+                    continue;
+                items.Add(champ);
+            }
+
+            if (items.Count > 0)
+            {
+                var result = HandyControl.Controls.MessageBox.Show($"진짜 삭제하는거 맞지?", "경고!", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    result = HandyControl.Controls.MessageBox.Show($"다시한번 묻는다?", "경고!", MessageBoxButton.YesNo);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        HandyControl.Controls.MessageBox.Show($"네 삭제하겠습니다", "낙장불입");
+                        PeerlessManager.Instance.RemoveUsedItem(items);
+                    }
+                }
+            }
+            RefreshView();
+        }
     }
 }

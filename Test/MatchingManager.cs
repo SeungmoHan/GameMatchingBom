@@ -17,24 +17,23 @@ namespace Test
         public bool UseLineInfo { get; set; } = false;
         public int MatchingMemberCount { get; set; } = 5;
 
-        public MatchResult MatchResult
-        {
-            get
-            {
-                lastMatchResult = UseLineInfo == true ? MatchResultWithLine : MatchResultWithoutLine;
-                return lastMatchResult;
-            }
-        }
-
         public void Reset()
         {
             lastMatchResult = null;
         }
 
-        public MatchResult? lastMatchResult = null;
+        public MatchResult CreateMatchResult()
+        {
+            lastMatchResult = MatchMaker.GetMatches(CurrentUsers, UseLineInfo, MatchingMemberCount);
+            return lastMatchResult;
+        }
 
-        private MatchResult MatchResultWithLine => MatchMaker.GetMatches(CurrentUsers, true, MatchingMemberCount);
-        private MatchResult MatchResultWithoutLine => MatchMaker.GetMatches(CurrentUsers, false, MatchingMemberCount);
+        public MatchResult? GetLastMatchResult()
+        {
+            return lastMatchResult;
+        }
+
+        public MatchResult? lastMatchResult = null;
 
         public void Init()
         {

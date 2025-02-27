@@ -87,6 +87,28 @@ namespace Test
             SelectedChampionInThisGame.Clear();
         }
 
+        public void RevertUsedItems()
+        {
+            foreach (var item in UsedChampions)
+            {
+                RemainedChampions.Add(item);
+            }
+            UsedChampions.Clear();
+        }
+
+        public void RemoveUsedItem(List<ChampionInfo> items)
+        {
+            foreach(var item in items)
+            {
+                int idx = UsedChampions.FindIndex(o => o.ChampionNameKor == item.ChampionNameKor);
+                if (idx == -1)
+                    continue;
+
+                RemainedChampions.Add(UsedChampions[idx]);
+                UsedChampions.RemoveAt(idx);
+            }
+        }
+
         public void CommitSelectedChampion()
         {
             StringBuilder sb = new();

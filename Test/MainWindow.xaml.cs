@@ -60,7 +60,7 @@ namespace Test
         private void BtnHomeViewClicked(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new HomeView(this); // 홈 화면
-            MatchingManager.Instance.Reset();
+            //MatchingManager.Instance.Reset();
         }
 
         private void BtnMatchingViewClicked(object sender, RoutedEventArgs e)
@@ -70,7 +70,7 @@ namespace Test
 
         private void BtnLogResetClicked(object sender, RoutedEventArgs e)
         {
-            Stash.Clear();
+            Stash.Flush();
             RefreshView();
         }
 

@@ -48,6 +48,16 @@ namespace Test
 
         private void btnAddMemberClick(object sender, RoutedEventArgs e)
         {
+            if(string.IsNullOrEmpty(tbAddBoxBamName.Text) ||
+               string.IsNullOrEmpty(tbAddBoxLolName.Text) ||
+               string.IsNullOrEmpty(cbUserTierType.Text) ||
+               string.IsNullOrEmpty(cbUserMainLine.Text))
+            {
+                HandyControl.Controls.MessageBox.Show("입력안된게 있어요", "체크체크");
+                return;
+            }
+
+
             bool addNewUser = originUser == null;
             string oldName = string.Empty;
             string oldNick = string.Empty;
