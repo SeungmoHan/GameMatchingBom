@@ -99,53 +99,53 @@ namespace Test
 
     public class Match
     {
-        public Team Red { get; set; } = new();
-        public Team Blue { get; set; } = new();
+        public Team Team1_Red { get; set; } = new();
+        public Team Team2_Red { get; set; } = new();
 
         public List<User> MatchUserList { get; set; } = new();
         public bool UseLine = false;
 
-        public string RedMember => string.Join("\n", Red.Users.Select((u, index) => ($"{(UseLine ? $"[{(MainLine)index + 1}]\t" : string.Empty)}{u.Name} [{u.Tier}]").Replace("LV", "")));
-        public string BlueMember => string.Join("\n", Blue.Users.Select((u, index) => ($"{(UseLine ? $"[{(MainLine)index + 1}]\t" : string.Empty)}{u.Name} [{u.Tier}]").Replace("LV", "")));
+        public string RedMember => string.Join("\n", Team2_Red.Users.Select((u, index) => ($"{(UseLine ? $"[{(MainLine)index + 1}]\t" : string.Empty)}{u.Name} [{u.Tier}]").Replace("LV", "")));
+        public string BlueMember => string.Join("\n", Team1_Red.Users.Select((u, index) => ($"{(UseLine ? $"[{(MainLine)index + 1}]\t" : string.Empty)}{u.Name} [{u.Tier}]").Replace("LV", "")));
 
         public void MakeTeam(bool useLine, int teamMemberCount)
         {
             Util.SortByTier(MatchUserList);
-            Red.TeamMemberCount = Blue.TeamMemberCount = teamMemberCount;
+            Team2_Red.TeamMemberCount = Team1_Red.TeamMemberCount = teamMemberCount;
             for (int i = 0; i < MatchUserList.Count; i++)
             {
-                int redTier = Red.GetTeamTierPoint();
-                int blueTier = Blue.GetTeamTierPoint();
+                int redTier = Team2_Red.GetTeamTierPoint();
+                int blueTier = Team1_Red.GetTeamTierPoint();
 
                 // 블루팀이 점수가 더 많음
                 if (redTier < blueTier)
                 {
-                    if (Red.CanAddMember(1))
+                    if (Team2_Red.CanAddMember(1))
                     {
-                        Red.AddMember(MatchUserList[i]);
+                        Team2_Red.AddMember(MatchUserList[i]);
                     }
                     else
                     {
-                        Blue.AddMember(MatchUserList[i]);
+                        Team1_Red.AddMember(MatchUserList[i]);
                     }
                 }
                 // 레드가 더 점수가 많음
                 else
                 {
-                    if (Blue.CanAddMember(1))
+                    if (Team1_Red.CanAddMember(1))
                     {
-                        Blue.AddMember(MatchUserList[i]);
+                        Team1_Red.AddMember(MatchUserList[i]);
                     }
                     else
                     {
-                        Red.AddMember(MatchUserList[i]);
+                        Team2_Red.AddMember(MatchUserList[i]);
                     }
                 }
             }
 
             UseLine = useLine;
-            Red.Shuffle();
-            Blue.Shuffle();
+            Team2_Red.Shuffle();
+            Team1_Red.Shuffle();
         }
     }
 
