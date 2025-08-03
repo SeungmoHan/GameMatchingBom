@@ -166,6 +166,8 @@ namespace Test
                 {
                     string jsonString = response.Content.ReadAsStringAsync().Result;
                     JObject data = JObject.Parse(jsonString);
+                    if (data == null)
+                        return;
                     TotalChampionCount = data["data"].Values().Count();
                     foreach (var champion in data["data"])
                     {

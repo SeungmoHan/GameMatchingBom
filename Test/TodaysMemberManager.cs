@@ -35,7 +35,7 @@ namespace Test
         public Dictionary<string, List<PlayRecord>> RecordDict { get; set; } = new Dictionary<string, List<PlayRecord>>();
         public void Init()
         {
-            LoadMembersRecord().Wait();
+            LoadMembersRecord();
         }
 
         public List<RecordViewData> GetSortedRecordData()
@@ -92,7 +92,7 @@ namespace Test
             return 0;
         }
 
-        public async Task<bool> LoadMembersRecord()
+        public bool LoadMembersRecord()
         {
             string SheetId = "1twtASQQqxml0G8jZ20fKQaaJ89Ih0IFFuuhFJBzrg1w";
             string SheetGid = "0";

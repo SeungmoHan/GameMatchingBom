@@ -28,7 +28,7 @@ namespace Test
 
     public partial class MainWindow
     {
-        private ObservableCollection<string> logViews { get; set; }
+        private ObservableCollection<string> logViews { get; set; } = new ObservableCollection<string>();
         private DispatcherTimer timer { get; set; }
 
 
