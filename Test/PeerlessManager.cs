@@ -67,8 +67,8 @@ namespace Test
             int idx = RemainedChampions.FindIndex(o => o.ChampionNameKor == info.ChampionNameKor);
             if (idx == -1)
                 return;
-            if (false == multiple)
-                Log.Stash.LogInfo($"{RemainedChampions[idx].ChampionNameKor}선택");
+            //if (false == multiple)
+            //    Log.Stash.LogInfo($"{RemainedChampions[idx].ChampionNameKor}선택");
             SelectedChampionInThisGame.Add(RemainedChampions[idx]);
             RemainedChampions.RemoveAt(idx);
             return;
@@ -83,7 +83,7 @@ namespace Test
                 sb.AppendLine($"[{champ.ChampionNameKor}]");
             }
             sb.Append("제거");
-            Log.Stash.LogInfo(sb.ToString());
+            //Log.Stash.LogInfo(sb.ToString());
             SelectedChampionInThisGame.Clear();
         }
 

@@ -1,7 +1,10 @@
 ﻿using HandyControl.Controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -35,6 +38,7 @@ namespace Test
             {
                 tbAddBoxBamName.Text = originUser.Name;
                 tbAddBoxLolName.Text = originUser.NickName;
+                tbNameTag.Text = originUser.Tag;
                 cbUserTierType.Text = originUser.Tier.ToString();
                 cbUserMainLine.Text = originUser.MainLine.ToString();
             }
@@ -63,7 +67,9 @@ namespace Test
             string oldNick = string.Empty;
             User? newUser = null;
             if (true == addNewUser)
+            {
                 newUser = new User();
+            }
             else
             {
                 oldName = originUser.Name;
@@ -75,6 +81,7 @@ namespace Test
             newUser.NickName = tbAddBoxLolName.Text;
             newUser.Tier = (UserTier)Enum.Parse(typeof(UserTier), cbUserTierType.Text);
             newUser.MainLine = (MainLine)Enum.Parse(typeof(MainLine), cbUserMainLine.Text);
+            newUser.Tag = tbNameTag.Text;
 
             if (addNewUser)
             {
@@ -86,6 +93,27 @@ namespace Test
                 MatchingManager.Instance.Save();
                 Stash.LogInfo($"닉네임수정\n{oldName}->{newUser.Name}\n{oldNick}->{newUser.NickName}\n노션에 업데이트 해주세요");
             }
+
+            StringBuilder sb = new();
+            sb.AppendLine($"Name\tNickName\tTier\tTag\tMainLine");
+            sb.AppendLine($"{newUser.Name}\t{newUser.NickName}\t{(int)newUser.Tier}\t{newUser.Tag}\t{newUser.MainLine}");
+
+            string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string directoryPath = System.IO.Path.Combine(userProfile, "Document", "GameMatchingBom");
+            string fileName = System.IO.Path.Combine(directoryPath, "Export_UserInfo.txt");
+
+            if (false == Directory.Exists(directoryPath))
+                Directory.CreateDirectory(directoryPath);
+
+            File.WriteAllText(fileName, sb.ToString());
+
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "notepad.exe",
+                Arguments = $"\"{fileName}\"", // 파일 경로 인자로 전달
+                UseShellExecute = false
+            };
+            Process.Start(psi);
 
             this.Close();
         }

@@ -22,31 +22,56 @@ namespace Test
             using HttpClient client = new HttpClient();
             try
             {
-                string url = "https://perfect-somersault-b5c.notion.site/9faec2a686334048a762afd011a968b3";
-                string html = client.GetStringAsync(url).Result;
+                var result = SpreadSheet.SpreadSheetLoader.LoadSheetData("1twtASQQqxml0G8jZ20fKQaaJ89Ih0IFFuuhFJBzrg1w", "1612294575");
 
-                int beginIdx = html.IndexOf("BeginUserList") + "BeginUserList".Length + 2;
-                int endIdx = html.IndexOf("EndUserList");
-
-                int stringLength = endIdx - beginIdx;
-
-                string temp = html.Substring(beginIdx, stringLength);
-                temp = temp.Replace("\\n", "\n");
-                temp = temp.Replace("\\t", "");
-                temp = temp.Replace("\\", "");
-                JObject jObj = JObject.Parse(temp);
-
-                var userListJson = jObj["MatchingBomUserList"];
-                foreach (var token in userListJson)
+                bool readComment = false;
+                bool readColumnName = false;
+                foreach (var row in result)
                 {
-                    User newUser = new();
-                    newUser.Name = token["nickname"].ToString();
-                    newUser.NickName = token["username"].ToString();
-                    newUser.Tier = (UserTier)token["level"].ToObject<int>();
-                    newUser.MainLine = (MainLine)Enum.Parse(typeof(MainLine),token["mainline"].ToString());
+                    if (readComment == false)
+                    {
+                        readComment = true;
+                        continue;
+                    }
+                    if (readColumnName == false)
+                    {
+                        readColumnName = true;
+                        continue;
+                    }
 
+                    User newUser = new();
+                    newUser.Name = row[0];
+                    newUser.NickName = row[1];
+                    newUser.Tier = (UserTier)Enum.Parse(typeof(UserTier), row[2]);
+                    newUser.Tag = row[3] == "null" ? string.Empty : row[3];
+                    newUser.MainLine = (MainLine)Enum.Parse(typeof(MainLine), row[4]);
                     MemberList.Add(newUser);
                 }
+                //string url = "https://perfect-somersault-b5c.notion.site/9faec2a686334048a762afd011a968b3";
+                //string html = client.GetStringAsync(url).Result;
+
+                //int beginIdx = html.IndexOf("BeginUserList") + "BeginUserList".Length + 2;
+                //int endIdx = html.IndexOf("EndUserList");
+
+                //int stringLength = endIdx - beginIdx;
+
+                //string temp = html.Substring(beginIdx, stringLength);
+                //temp = temp.Replace("\\n", "\n");
+                //temp = temp.Replace("\\t", "");
+                //temp = temp.Replace("\\", "");
+                //JObject jObj = JObject.Parse(temp);
+
+                //var userListJson = jObj["MatchingBomUserList"];
+                //foreach (var token in userListJson)
+                //{
+                //    User newUser = new();
+                //    newUser.Name = token["nickname"].ToString();
+                //    newUser.NickName = token["username"].ToString();
+                //    newUser.Tier = (UserTier)token["level"].ToObject<int>();
+                //    newUser.MainLine = (MainLine)Enum.Parse(typeof(MainLine),token["mainline"].ToString());
+
+                //    MemberList.Add(newUser);
+                //}
             }
             catch (Exception e)
             {
@@ -91,26 +116,7 @@ namespace Test
 
             Util.AddNew(user, ref MemberList);
 
-            Save();
             return true;
-        }
-
-        public bool RemoveMemberList(User user)
-        {
-            if (false == Util.HasName(user.Name, MemberList))
-                return false;
-
-            Util.RemoveName(user.Name, ref MemberList);
-
-            Save();
-            return true;
-        }
-
-        public void Save()
-        {
-            var str = SerializeMemberData();
-
-            Util.WriteToFileAndOpen(str);
         }
     }
 }

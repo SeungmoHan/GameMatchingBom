@@ -45,10 +45,6 @@ namespace Test
             return MemberLoader.AddMemberList(user);
         }
 
-        public bool RemoveUser(User user)
-        {
-            return MemberLoader.RemoveMemberList(user);
-        }
 
         public void AddCurrentUser(User user)
         {
@@ -68,7 +64,7 @@ namespace Test
 
         public void Save()
         {
-            MemberLoader.Save();
+            //MemberLoader.Save();
         }
 }
 }

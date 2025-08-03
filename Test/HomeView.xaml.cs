@@ -214,7 +214,7 @@ namespace Test
             {
                 return;
             }
-            MatchingManager.Instance.MemberLoader.RemoveMemberList(user);
+            //MatchingManager.Instance.MemberLoader.RemoveMemberList(user);
             Util.RemoveName(user.Name, ref MatchingManager.Instance.CurrentUsers); 
             Stash.LogInfo($"맴버 리스트에서 {user.Name} 제거!\n노션에 업데이트 해주세요");
             RefreshView();

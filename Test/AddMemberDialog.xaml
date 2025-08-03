@@ -31,6 +31,10 @@
                 <TextBox Text="" x:Name="tbAddBoxLolName"></TextBox>
             </DockPanel>
             <DockPanel>
+                <TextBox IsReadOnly="True" Text="롤 태그"></TextBox>
+                <TextBox Text="" x:Name="tbNameTag"></TextBox>
+            </DockPanel>
+            <DockPanel>
                 <TextBox IsReadOnly="True" Text="티어"></TextBox>
                 <ComboBox x:Name="cbUserTierType"
                           ItemsSource="{Binding UserTier}"

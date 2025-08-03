@@ -36,10 +36,11 @@ namespace Test
         {
             InitializeComponent();
             MatchingManager.Instance.Init();
+            TodaysMemberManager.Instance.Init();
             Task.Run(PeerlessManager.Instance.InitChampions);
             Stash.LogInfo("MemberLoad Clear");
             MainContent.Content = new HomeView(this);  // 홈 화면
-            Closing += (a, b) => { Log.Stash.Flush(); };
+            //Closing += (a, b) => { Log.Stash.Flush(); };
             RefreshView();
             timer = new();
             timer.Interval = TimeSpan.FromSeconds(0.3);
@@ -77,6 +78,11 @@ namespace Test
         private void BtnPeerlessViewClicked(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new PeerlessView(this);
+        }
+
+        private void BtnUpdateTodayRecord(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new UpdateTodayRecordView(this);
         }
     }
 }

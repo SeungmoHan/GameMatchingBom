@@ -48,6 +48,7 @@ namespace Test
         public string Name { get; set; } = string.Empty;
         public string NickName { get; set; } = string.Empty;
         public UserTier Tier { get; set; } = UserTier.Invalid;
+        public string Tag { get; set; } = string.Empty;
         public MainLine MainLine { get; set; } = MainLine.All;
     }
     public class Team

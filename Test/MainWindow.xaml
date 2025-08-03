@@ -20,22 +20,24 @@
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Button Grid.Row="0" Width="190" Click="BtnHomeViewClicked" Background="#aaaaaa" FontWeight="Bold" Content="🙋 맴버 추가"/>
             <Button Grid.Row="1" Width="190"  Click="BtnMatchingViewClicked" Background="#aaaaaa" FontWeight="Bold" Content="🎲 매칭 결과"/>
             <Button Grid.Row="2" Width="190"  Click="BtnPeerlessViewClicked" Background="#aaaaaa" FontWeight="Bold" Content="✨ 피어리스"/>
-            <Grid Grid.Row="3">
+            <Button Grid.Row="3" Width="190"  Click="BtnUpdateTodayRecord" Background="#aaaaaa" FontWeight="Bold" Content="🙋 맴버 점수"/>
+            <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*"></ColumnDefinition>
                     <ColumnDefinition Width="2*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBox Grid.Column="0" Text="로그" HorizontalContentAlignment="Center" FontSize="20" FontWeight="Bold" Margin="5"
+                <TextBox Grid.Column="0" Text="로그" HorizontalContentAlignment="Center" FontSize="20" IsReadOnly="True" FontWeight="Bold" Margin="5"
                          Background="DarkGray"></TextBox>
                 <Button Grid.Column="1" HorizontalContentAlignment="Center" Margin="5" Width="80" Height="40" Content="로그 리셋" FontWeight="Bold" FontSize="14"
                         Background="DarkGray" Click="BtnLogResetClicked"></Button>
             </Grid>
-            <ListView Grid.Row="4" x:Name="lvStashLog"  Background="LightGray" ItemsSource="{Binding logViews}">
+            <ListView Grid.Row="5" x:Name="lvStashLog"  Background="LightGray" ItemsSource="{Binding logViews}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}" 
