@@ -144,7 +144,6 @@ namespace Test
                 UseShellExecute = false
             };
             Process.Start(psi);
-            MessageBox.Show(content);
         }
 
         private void dgRankInfoViewDoubleClicked(object sender, MouseButtonEventArgs e)
@@ -164,7 +163,7 @@ namespace Test
             }
             if (false == records.TryGetValue(selectedRecord.PlayerName, out var recordList))
             {
-                HandyControl.Controls.MessageBox.Show($"선택된 플레이어의 기록이 없습니다: {selectedRecord.PlayerName}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                HandyControl.Controls.MessageBox.Show($"선택된 플레이어의 기록이 없습니다: {selectedRecord.PlayerName}", "게임 안하는사람", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
