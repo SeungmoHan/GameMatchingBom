@@ -38,22 +38,63 @@ namespace Test
             LoadMembersRecord();
         }
 
-        public List<RecordViewData> GetSortedRecordData()
+        public List<RecordViewData> GetSortedRecordData(List<User> members)
         {
             List<RecordViewData> ret = new List<RecordViewData>();
+            foreach (var member in members)
+            {
+                bool valid = true;
+                foreach (var already in ret)
+                {
+                    if (already.PlayerName == member.Name)
+                    {
+                        HandyControl.Controls.MessageBox.Show($"중복된 이름이 있습니다: {member.Name}", "오류");
+                        valid = false;
+                        break;
+                    }
+                }
+
+                if(valid == false)
+                    continue;
+
+                RecordViewData view = new RecordViewData();
+                view.PlayerName = member.Name;
+                view.CurrentPoint = 0;
+                ret.Add(view);
+            }
+
+
             foreach (var record in RecordDict)
             {
-                RecordViewData view = new RecordViewData();
-                view.PlayerName = record.Key;
-                view.CurrentPoint = GetRecordPoint(record.Value);
-                ret.Add(view);
+                string playerName = record.Key;
+                var history = record.Value;
+
+                foreach(var item in ret)
+                {
+                    if (item.PlayerName == playerName)
+                    {
+                        item.CurrentPoint = GetRecordPoint(history);
+                        break;
+                    }
+                }
             }
 
             ret = ret.OrderByDescending(item => item.CurrentPoint).ToList();
             uint index = 0;
+            uint rank = 0;
+            uint lastPoint = 978671234; // invalid한 임의의 값
             ret.ForEach((item) =>
             {
-                item.Ranking = ++index;
+                if (item.CurrentPoint == lastPoint)
+                {
+                    ++index;
+                }
+                else
+                {
+                    rank = ++index;
+                }
+                lastPoint = item.CurrentPoint;
+                item.Ranking = rank;
             });
 
             return ret;

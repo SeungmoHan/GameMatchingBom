@@ -25,8 +25,8 @@
         </DataGrid>
         <TextBlock Grid.Column="1" Grid.Row="0" Text="소취밤 랭킹" FontWeight="Bold" FontSize="25"></TextBlock>
         <DataGrid Grid.Column="1"  Grid.Row="1" x:Name="dgTodaysMember"
-                  IsReadOnly="True" 
-                  SelectionMode="Single">
+                  PreviewMouseDoubleClick="dgRankInfoViewDoubleClicked"
+                  IsReadOnly="True">
         </DataGrid>
         <DockPanel Grid.Row="2">
             <ComboBox x:Name="cbGameTypeChoice" Width="200" IsReadOnly="True"></ComboBox>

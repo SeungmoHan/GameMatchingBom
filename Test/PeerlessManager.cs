@@ -166,15 +166,16 @@ namespace Test
                 {
                     string jsonString = response.Content.ReadAsStringAsync().Result;
                     JObject data = JObject.Parse(jsonString);
-                    if (data == null)
-                        return;
                     TotalChampionCount = data["data"].Values().Count();
                     foreach (var champion in data["data"])
                     {
+
                         Task.Run(() =>
                         {
-                            string championNameEng = champion.First["id"].ToString();
-                            string championNameKor = champion.First["name"].ToString();
+                            if (null == champion)
+                                return;
+                            string championNameEng = champion.First?["id"].ToString();
+                            string championNameKor = champion.First?["name"].ToString();
                             string championImgUrl = $"{defaultUrl}/{version}/{imgTag}/champion/{championNameEng}.png";
 
                             BitmapImage? image = LoadImageAsync(championImgUrl);
@@ -185,10 +186,10 @@ namespace Test
                             if (null == info)
                                 return;
 
-                            lock(lockObj)
+                            lock (lockObj)
                             {
                                 AllChampion.Add(info);
-                                if(AllChampion.Count== TotalChampionCount)
+                                if (AllChampion.Count == TotalChampionCount)
                                 {
                                     RemainedChampions = new List<ChampionInfo>(AllChampion);
                                     Log.Stash.LogInfo("롤 챔피언 로드 완료!");

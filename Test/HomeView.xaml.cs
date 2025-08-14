@@ -40,7 +40,7 @@ namespace Test
         }
 
 
-        private void btnCreateNewUser(object sender, RoutedEventArgs e)
+        private void btnCreateNewUser(object? sender, RoutedEventArgs? e)
         {
             AddMemberDialog addDialog = new(null);
             addDialog.originUser = null;
@@ -58,14 +58,14 @@ namespace Test
             txtSearchKeyUp(null, null);
         }
 
-        private void btnReloadMember(object sender, RoutedEventArgs e)
+        private void btnReloadMember(object? sender, RoutedEventArgs? e)
         {
             MatchingManager.Instance.MemberLoader.Reload();
             Stash.LogInfo("맴버 리로드 성공!");
             RefreshView();
         }
 
-        private void btnResetCurrentMember(object sender, RoutedEventArgs e)
+        private void btnResetCurrentMember(object? sender, RoutedEventArgs? e)
         {
             MatchingManager.Instance.CurrentUsers.Clear();
             tbNameAdd.Text = "이름 추가";
@@ -73,12 +73,12 @@ namespace Test
             RefreshView();
         }
 
-        private void tbNameGotFocus(object sender, RoutedEventArgs e)
+        private void tbNameGotFocus(object? sender, RoutedEventArgs? e)
         {
             tbNameAdd.Text = "";
         }
 
-        private void dgPreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void dgPreviewMouseDoubleClick(object? sender, MouseButtonEventArgs? e)
         {
             var userInfo = dgPeople.SelectedItem as User;
             if (userInfo == null)
@@ -99,8 +99,10 @@ namespace Test
             RefreshView();
         }
 
-        private void dgPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void dgPreviewMouseDown(object? sender, MouseButtonEventArgs? e)
         {
+            if(e == null)
+                return;
             var hit = dgPeople.InputHitTest(e.GetPosition(dgPeople)) as DependencyObject;
 
             while (hit != null && !(hit is DataGridRow))
@@ -115,7 +117,7 @@ namespace Test
             }
         }
 
-        private void btnShuffleClickWithoutLine(object sender, RoutedEventArgs e)
+        private void btnShuffleClickWithoutLine(object? sender, RoutedEventArgs? e)
         {
             MatchingManager.Instance.UseLineInfo = false;
             var memberCount = (MemberCount)Enum.Parse(typeof(MemberCount), cbMemberCountType.Text);
@@ -126,7 +128,7 @@ namespace Test
             Stash.LogInfo($"{memberCount} vs {memberCount} 매칭 (라인X)");
         }
 
-        private void btnShuffleClickWithLine(object sender, RoutedEventArgs e)
+        private void btnShuffleClickWithLine(object? sender, RoutedEventArgs? e)
         {
             MatchingManager.Instance.UseLineInfo = true;
             var memberCount = (MemberCount)Enum.Parse(typeof(MemberCount), cbMemberCountType.Text);
@@ -137,7 +139,7 @@ namespace Test
             Stash.LogInfo($"{memberCount} vs {memberCount} 매칭 (라인O)");
         }
 
-        private void txtSearchKeyUp(object sender, KeyEventArgs e)
+        private void txtSearchKeyUp(object? sender, KeyEventArgs? e)
         {
             string query = txtSearch.Text.ToLower();
 
@@ -172,7 +174,7 @@ namespace Test
             }
         }
 
-        private void lstSuggestionsMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void lstSuggestionsMouseDoubleClick(object? sender, MouseButtonEventArgs? e)
         {
             if (lstSuggestions.SelectedItem is string selectedItem)
             {
@@ -201,7 +203,7 @@ namespace Test
             RefreshView();
         }
 
-        private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
+        private void DeleteMenuItem_Click(object? sender, RoutedEventArgs? e)
         {
             var itemString = lstSuggestions.SelectedItem as string;
             if (itemString == null)
@@ -220,7 +222,7 @@ namespace Test
             RefreshView();
         }
 
-        private void EditMenuItem_Click(object sender, RoutedEventArgs e)
+        private void EditMenuItem_Click(object? sender, RoutedEventArgs? e)
         {
             var itemString = lstSuggestions.SelectedItem as string;
             if (itemString == null)

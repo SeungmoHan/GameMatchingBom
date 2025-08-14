@@ -66,7 +66,7 @@ namespace Test
             string oldName = string.Empty;
             string oldNick = string.Empty;
             User? newUser = null;
-            if (true == addNewUser)
+            if (originUser == null)
             {
                 newUser = new User();
             }

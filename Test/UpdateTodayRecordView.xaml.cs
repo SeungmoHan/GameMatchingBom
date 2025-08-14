@@ -1,9 +1,15 @@
-﻿using System;
+﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using Google.Apis.Sheets.v4;
+using Google.Apis.Sheets.v4.Data;
+using Google.Apis.Util.Store;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -41,8 +47,8 @@ namespace Test
             cbGameTypeChoice.Text = "선택하세요";
             TodaysMemberManager.Instance.SaveMembersRecord();
             dgSelectedMember.ItemsSource = MatchingManager.Instance.CurrentUsers;
-
-            dgTodaysMember.ItemsSource = TodaysMemberManager.Instance.GetSortedRecordData();
+            
+            dgTodaysMember.ItemsSource = TodaysMemberManager.Instance.GetSortedRecordData(MatchingManager.Instance.MemberLoader.MemberList);
         }
 
         private void btnUpdateQueryCreate(object sender, RoutedEventArgs e)
@@ -73,6 +79,49 @@ namespace Test
             RefreshView();
         }
 
+        public async void ExportToExcelCloud(string content)
+        {
+            await Task.Run(() => { });
+            //try
+            //{
+            //    // 사용자 인증 (OAuth2 팝업 자동 표시)
+            //    UserCredential credential;
+            //    using (var stream = new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
+            //    {
+            //        credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
+            //            GoogleClientSecrets.Load(stream).Secrets,
+            //            new[] { SheetsService.Scope.Spreadsheets },
+            //            "user",
+            //            CancellationToken.None,
+            //            new FileDataStore("token.json", true)
+            //        );
+            //    }
+
+            //    // SheetsService 생성
+            //    var service = new SheetsService(new BaseClientService.Initializer()
+            //    {
+            //        HttpClientInitializer = credential,
+            //        ApplicationName = "WPF Google Sheets Demo",
+            //    });
+
+            //    // 작성할 데이터
+            //    var values = new List<IList<object>> { new List<object> { "Hello", "from", "WPF" } };
+            //    var valueRange = new ValueRange { Values = values };
+
+            //    // 요청 생성
+            //    var updateRequest = service.Spreadsheets.Values.Append(valueRange, SpreadsheetId, SheetRange);
+            //    updateRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
+
+            //    // 실행
+            //    var result = await updateRequest.ExecuteAsync();
+            //    MessageBox.Show("✅ 스프레드시트에 작성 성공!");
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show($"❌ 오류 발생: {ex.Message}");
+            //}
+        }
+
         private void ExportToCsvFile(string content)
         {
             string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -84,7 +133,7 @@ namespace Test
                 Directory.CreateDirectory(directoryPath);
             }
 
-            content = $"PlayerName\tGameType\tPlayedDate\n{content}";
+            content = $"export datetime {DateTime.Now}\nPlayerName\tGameType\tPlayedDate\n{content}";
 
             File.WriteAllText(fileName, content);
 
@@ -95,6 +144,12 @@ namespace Test
                 UseShellExecute = false
             };
             Process.Start(psi);
+            MessageBox.Show(content);
+        }
+
+        private void dgRankInfoViewDoubleClicked(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }
