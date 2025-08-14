@@ -32,6 +32,7 @@ namespace Test
     {
         public static TodaysMemberManager Instance { get; set; } = new();
 
+        // Key = 이름,  Value = 플레이 기록
         public Dictionary<string, List<PlayRecord>> RecordDict { get; set; } = new Dictionary<string, List<PlayRecord>>();
         public void Init()
         {
@@ -119,7 +120,7 @@ namespace Test
             return ret;
         }
 
-        private uint GetPointByGameType(string gameType)
+        public static uint GetPointByGameType(string gameType)
         {
             switch (gameType)
             {
@@ -175,7 +176,6 @@ namespace Test
 
         public bool SaveMembersRecord()
         {
-
             return true;
         }
 

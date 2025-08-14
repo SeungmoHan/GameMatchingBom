@@ -149,7 +149,56 @@ namespace Test
 
         private void dgRankInfoViewDoubleClicked(object sender, MouseButtonEventArgs e)
         {
+            var records = TodaysMemberManager.Instance.RecordDict;
 
+            if (dgTodaysMember.SelectedItem == null)
+            {
+                HandyControl.Controls.MessageBox.Show("선택된 항목이 없습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var selectedRecord = dgTodaysMember.SelectedItem as RecordViewData;
+            if (selectedRecord == null)
+            {
+                HandyControl.Controls.MessageBox.Show("선택된 항목이 올바르지 않습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (false == records.TryGetValue(selectedRecord.PlayerName, out var recordList))
+            {
+                HandyControl.Controls.MessageBox.Show($"선택된 플레이어의 기록이 없습니다: {selectedRecord.PlayerName}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"플레이어: {selectedRecord.PlayerName}");
+            if (recordList.Count == 0)
+            {
+                sb.AppendLine("기록이 없습니다...");
+            }
+            else
+            {
+                Dictionary<string, List<string>> datePlayRecord = new();
+                foreach (var item in recordList)
+                {
+                    if (false == datePlayRecord.ContainsKey(item.PlayedHistory))
+                    {
+                        datePlayRecord[item.PlayedHistory] = new List<string>();
+                    }
+                    datePlayRecord[item.PlayedHistory].Add(item.GameType);
+                }
+
+                foreach(var dateRecord in datePlayRecord)
+                {
+                    StringBuilder temp = new();
+                    temp.Append($"{dateRecord.Key} {string.Join(",", dateRecord.Value)}");
+                    uint point = 0;
+                    foreach (var gameType in dateRecord.Value)
+                        point = Math.Max(point, TodaysMemberManager.GetPointByGameType(gameType));
+                    temp.Append($" +{point}");
+
+                    sb.AppendLine(temp.ToString());
+                }
+            }
+            HandyControl.Controls.MessageBox.Show(sb.ToString(), "플레이 기록", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }
