@@ -1,0 +1,67 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <AssemblyTitle>NewMatchingBom</AssemblyTitle>
+    <AssemblyDescription>게임 팀 매칭 시스템</AssemblyDescription>
+    <ApplicationIcon>Assets\daesanghyeok.ico</ApplicationIcon>
+    
+    <!-- Self-contained 64비트 배포 설정 -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <PublishTrimmed>false</PublishTrimmed>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\daesanghyeok.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Apis.Auth" Version="1.70.0" />
+    <PackageReference Include="Google.Apis.Sheets.v4" Version="1.70.0.3819" />
+    <PackageReference Include="HandyControls" Version="3.5.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+
+  <!-- 게시 후 배치 파일 실행 -->
+  <Target Name="RunCompressBat" AfterTargets="Publish">
+    <Exec Command="$(SolutionDir)../release/CompressFiles.bat" WorkingDirectory="$(SolutionDir)../release" ContinueOnError="true" />
+  </Target>
+
+  <!-- GitHub Release 업로드 -->
+  <Target Name="GitHubRelease" AfterTargets="RunCompressBat">
+    <PropertyGroup>
+      <ZipFilePath>$(SolutionDir)../release/compressed/GameMatchingBom.Zip</ZipFilePath>
+      <ReleaseTag>GameMatchingBom</ReleaseTag>
+      <RepoOwner>SeungmoHan</RepoOwner>
+      <RepoName>GameMatchingBom</RepoName>
+      <RepoFullName>$(RepoOwner)/$(RepoName)</RepoFullName>
+    </PropertyGroup>
+    
+    <!-- GitHub CLI를 사용하여 릴리스 업로드 -->
+    <!-- 1. 기존 자산 삭제 (있는 경우) -->
+    <Exec Command="&quot;C:\Program Files\GitHub CLI\gh.exe&quot; release delete-asset $(ReleaseTag) GameMatchingBom.zip --repo $(RepoFullName) --yes" 
+          WorkingDirectory="$(SolutionDir)../release" 
+          ContinueOnError="true"
+          IgnoreExitCode="true" />
+    <!-- 2. 새 자산 업로드 -->
+    <Exec Command="&quot;C:\Program Files\GitHub CLI\gh.exe&quot; release upload $(ReleaseTag) &quot;$(ZipFilePath)&quot; --repo $(RepoFullName)" 
+          WorkingDirectory="$(SolutionDir)../release" 
+          ContinueOnError="true"
+          IgnoreExitCode="true" />
+          
+    <!-- 성공/실패 로그 메시지 -->
+    <Message Text="GitHub Release 업로드 시도: https://github.com/$(RepoFullName)/releases/tag/$(ReleaseTag)" 
+             Importance="high" />
+  </Target>
+
+</Project>

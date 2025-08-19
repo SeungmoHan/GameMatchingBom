@@ -1,0 +1,158 @@
+﻿<hc:Window x:Class="NewMatchingBom.Views.MainWindow"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:hc="https://handyorg.github.io/handycontrol"
+           xmlns:views="clr-namespace:NewMatchingBom.Views"
+           xmlns:vm="clr-namespace:NewMatchingBom.ViewModels"
+           Title="팀뽑기툴" 
+           Height="800" 
+           Width="1400"
+           MinHeight="600"
+           MinWidth="1000"
+           ResizeMode="CanResize"
+           Background="{StaticResource DarkBgBrush}"
+           WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:HomeViewModel}">
+            <views:HomeView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:MatchingResultViewModel}">
+            <views:MatchingResultView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:PeerlessViewModel}">
+            <views:PeerlessView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:UpdateRecordViewModel}">
+            <views:UpdateRecordView />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Navigation Panel -->
+        <Border Grid.Column="0" Background="{StaticResource CardBgBrush}" 
+                BorderBrush="{StaticResource SurfaceBrush}" BorderThickness="0,0,1,0">
+            <Grid Margin="0,20,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <StackPanel Grid.Row="0" Margin="20,0,20,30">
+                    <TextBlock Text="🎮 팀뽑기툴" 
+                              Style="{StaticResource TitleText}"
+                              Foreground="{StaticResource PrimaryBrush}"
+                              HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Navigation Menu -->
+                <StackPanel Grid.Row="1" Margin="20,0,20,20">
+                    <Button Content="🙋‍♂️ 멤버 관리" 
+                            Command="{Binding NavigateToHomeCommand}"
+                            Style="{StaticResource ModernButton}"
+                            Height="50"
+                            Margin="0,5"
+                            HorizontalAlignment="Stretch"/>
+                    
+                    <Button Content="🎲 매칭 결과" 
+                            Command="{Binding NavigateToMatchingResultCommand}"
+                            Style="{StaticResource AccentButton}"
+                            Height="50"
+                            Margin="0,5"
+                            HorizontalAlignment="Stretch"/>
+                    
+                    <Button Content="✨ 피어리스" 
+                            Command="{Binding NavigateToPeerlessCommand}"
+                            Style="{StaticResource WarningButton}"
+                            Height="50"
+                            Margin="0,5"
+                            HorizontalAlignment="Stretch"/>
+                    
+                    <Button Content="📊 멤버 점수" 
+                            Command="{Binding NavigateToUpdateRecordCommand}"
+                            Style="{StaticResource SuccessButton}"
+                            Height="50"
+                            Margin="0,5"
+                            HorizontalAlignment="Stretch"/>
+                </StackPanel>
+
+                <!-- Log Section -->
+                <hc:Card Grid.Row="2" Style="{StaticResource ModernCard}" Margin="20,10,20,20">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Log Header -->
+                        <Grid Grid.Row="0" Margin="0,0,0,15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Column="0" 
+                                      Text="📄 활동 로그" 
+                                      Style="{StaticResource SubtitleText}"/>
+                            
+                            <Button Grid.Column="1" 
+                                   Content="🗑️" 
+                                   Command="{Binding ClearLogCommand}"
+                                   Style="{StaticResource DangerButton}"
+                                   Width="35" 
+                                   Height="35"
+                                   FontSize="14"
+                                   ToolTip="로그 초기화"
+                                   Padding="0"/>
+                        </Grid>
+
+                        <!-- Log Content -->
+                        <Border Grid.Row="1" 
+                               Background="{StaticResource SurfaceBrush}"
+                               CornerRadius="8"
+                               MaxHeight="300">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                         Padding="12">
+                                <ItemsControl ItemsSource="{Binding LogEntries}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}" 
+                                                      Style="{StaticResource BodyText}"
+                                                      FontSize="11"
+                                                      TextWrapping="Wrap"
+                                                      Margin="0,2"
+                                                      Opacity="0.9"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+                </hc:Card>
+
+                <!-- Footer -->
+                <StackPanel Grid.Row="3" Margin="20,0,20,20">
+                    <Rectangle Height="1" Fill="{StaticResource SurfaceBrush}" Margin="0,0,0,15"/>
+                    <TextBlock Text="v2.0" 
+                              Style="{StaticResource BodyText}"
+                              HorizontalAlignment="Center"
+                              FontSize="12"
+                              Opacity="0.6"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Border Grid.Column="1" Background="{StaticResource DarkBgBrush}" Padding="20">
+            <ContentPresenter Content="{Binding CurrentViewModel}"/>
+        </Border>
+    </Grid>
+</hc:Window>
