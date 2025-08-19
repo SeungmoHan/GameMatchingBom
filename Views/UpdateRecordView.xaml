@@ -113,7 +113,7 @@
 
                             <hc:TextBox Grid.Column="2" 
                                        Text="{Binding SelectedDate}"
-                                       hc:InfoElement.Placeholder="YYYY-MM-DD"
+                                       hc:InfoElement.Placeholder="YYYY.MM.DD"
                                        Style="{StaticResource ModernTextBox}"
                                        Height="35"
                                        Margin="0,0,15,0"/>

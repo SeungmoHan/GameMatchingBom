@@ -19,7 +19,7 @@ namespace NewMatchingBom.ViewModels
         private readonly ILoggingService _loggingService;
         
         private string _selectedGameType = "내전";
-        private string _selectedDate = DateTime.Today.ToString("yyyy-MM-dd");
+        private string _selectedDate = DateTime.Today.ToString("yyyy.MM.dd");
 
         public ObservableCollection<User> Members => _memberService.AllMembers;
         public ObservableCollection<User> SelectedMembersForRecord => _memberService.SelectedMembers;
