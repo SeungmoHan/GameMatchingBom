@@ -20,6 +20,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="nul" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Assets\daesanghyeok.ico" />
   </ItemGroup>
 
@@ -49,19 +53,12 @@
     
     <!-- GitHub CLI를 사용하여 릴리스 업로드 -->
     <!-- 1. 기존 자산 삭제 (있는 경우) -->
-    <Exec Command="&quot;C:\Program Files\GitHub CLI\gh.exe&quot; release delete-asset $(ReleaseTag) GameMatchingBom.zip --repo $(RepoFullName) --yes" 
-          WorkingDirectory="$(SolutionDir)../release" 
-          ContinueOnError="true"
-          IgnoreExitCode="true" />
+    <Exec Command="&quot;C:\Program Files\GitHub CLI\gh.exe&quot; release delete-asset $(ReleaseTag) GameMatchingBom.zip --repo $(RepoFullName) --yes" WorkingDirectory="$(SolutionDir)../release" ContinueOnError="true" IgnoreExitCode="true" />
     <!-- 2. 새 자산 업로드 -->
-    <Exec Command="&quot;C:\Program Files\GitHub CLI\gh.exe&quot; release upload $(ReleaseTag) &quot;$(ZipFilePath)&quot; --repo $(RepoFullName)" 
-          WorkingDirectory="$(SolutionDir)../release" 
-          ContinueOnError="true"
-          IgnoreExitCode="true" />
+    <Exec Command="&quot;C:\Program Files\GitHub CLI\gh.exe&quot; release upload $(ReleaseTag) &quot;$(ZipFilePath)&quot; --repo $(RepoFullName)" WorkingDirectory="$(SolutionDir)../release" ContinueOnError="true" IgnoreExitCode="true" />
           
     <!-- 성공/실패 로그 메시지 -->
-    <Message Text="GitHub Release 업로드 시도: https://github.com/$(RepoFullName)/releases/tag/$(ReleaseTag)" 
-             Importance="high" />
+    <Message Text="GitHub Release 업로드 시도: https://github.com/$(RepoFullName)/releases/tag/$(ReleaseTag)" Importance="high" />
   </Target>
 
 </Project>
