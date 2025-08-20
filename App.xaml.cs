@@ -56,8 +56,16 @@ namespace NewMatchingBom
                     memberService.InitializeAsync();
                 }
 
-                // ChampionService는 필요할 때 초기화 (피어리스 뷰에서)
-                loggingService?.LogInfo("ChampionService는 피어리스 뷰에서 필요할 때 초기화됩니다.");
+                // ChampionService 초기화 (백그라운드에서 미리 로드)
+                var championService = ServiceProvider?.GetService<IChampionService>();
+                if (championService != null)
+                {
+                    loggingService?.LogInfo("챔피언 데이터 백그라운드 로딩 시작...");
+                    _ = Task.Run(async () =>
+                    {
+                        await championService.InitializeChampionsAsync();
+                    });
+                }
 
                 loggingService?.LogInfo("✅ 애플리케이션 초기화 완료!");
             }

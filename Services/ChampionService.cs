@@ -34,7 +34,8 @@ namespace NewMatchingBom.Services
 
         public async Task InitializeChampionsAsync()
         {
-            const string version = "14.3.1";
+            // 최신 버전 자동 확인
+            string version = await GetLatestVersionAsync() ?? "14.24.1"; // 기본값으로 최신 버전 사용
             const string defaultUrl = "https://ddragon.leagueoflegends.com/cdn";
             const string localeTag = "ko_KR";
             const string championTag = "champion.json";
@@ -45,71 +46,218 @@ namespace NewMatchingBom.Services
 
             try
             {
-                _loggingService.LogInfo("롤 챔피언 데이터 로딩 시작...");
+                _loggingService.LogInfo($"롤 챔피언 데이터 로딩 시작... (버전: {version})");
 
                 using var client = new HttpClient();
-                client.Timeout = TimeSpan.FromSeconds(10); // 10초 타임아웃 설정
-                var response = await client.GetAsync(url);
-
-                if (response.IsSuccessStatusCode)
+                client.Timeout = TimeSpan.FromSeconds(30); // 타임아웃 30초로 증가
+                
+                // 재시도 로직 추가
+                int maxRetries = 3;
+                for (int retry = 0; retry < maxRetries; retry++)
                 {
-                    string jsonString = await response.Content.ReadAsStringAsync();
-                    JObject data = JObject.Parse(jsonString);
-                    TotalChampionCount = data["data"]?.Values().Count() ?? 0;
-
-                    // 동시 처리를 위한 컬렉션 준비
-                    var championInfos = new List<ChampionInfo>();
-                    var championsData = data["data"]?.ToObject<Dictionary<string, JToken>>() ?? new Dictionary<string, JToken>();
-                    
-                    // 병렬 처리로 챔피언 정보 로드 (최대 동시성 제한)
-                    var semaphore = new SemaphoreSlim(10, 10); // 최대 10개 동시 처리
-                    var tasks = championsData.Select(async champion =>
+                    try
                     {
-                        await semaphore.WaitAsync();
-                        try
+                        var response = await client.GetAsync(url);
+
+                        if (response.IsSuccessStatusCode)
                         {
-                            string? championNameEng = champion.Value["id"]?.ToString();
-                            string? championNameKor = champion.Value["name"]?.ToString();
+                            string jsonString = await response.Content.ReadAsStringAsync();
+                            JObject data = JObject.Parse(jsonString);
+                            TotalChampionCount = data["data"]?.Values().Count() ?? 0;
+
+                            // 동시 처리를 위한 컬렉션 준비
+                            var championInfos = new List<ChampionInfo>();
+                            var championsData = data["data"]?.ToObject<Dictionary<string, JToken>>() ?? new Dictionary<string, JToken>();
                             
-                            if (string.IsNullOrEmpty(championNameEng) || string.IsNullOrEmpty(championNameKor))
-                                return null;
+                            // 병렬 처리로 챔피언 정보 로드 (최대 동시성 제한)
+                            var semaphore = new SemaphoreSlim(5, 5); // 동시 처리를 5개로 줄여 안정성 향상
+                            var tasks = championsData.Select(async champion =>
+                            {
+                                await semaphore.WaitAsync();
+                                try
+                                {
+                                    string? championNameEng = champion.Value["id"]?.ToString();
+                                    string? championNameKor = champion.Value["name"]?.ToString();
+                                    
+                                    if (string.IsNullOrEmpty(championNameEng) || string.IsNullOrEmpty(championNameKor))
+                                        return null;
 
-                            string championImgUrl = $"{defaultUrl}/{version}/{imgTag}/champion/{championNameEng}.png";
-                            BitmapImage? image = await LoadImageAsync(championImgUrl);
+                                    string championImgUrl = $"{defaultUrl}/{version}/{imgTag}/champion/{championNameEng}.png";
+                                    BitmapImage? image = await LoadImageAsync(championImgUrl);
 
-                            return new ChampionInfo(championNameKor, championNameEng, championImgUrl, image);
+                                    return new ChampionInfo(championNameKor, championNameEng, championImgUrl, image);
+                                }
+                                catch (Exception ex)
+                                {
+                                    _loggingService.LogError($"챔피언 로딩 오류 ({champion.Key}): {ex.Message}");
+                                    return null;
+                                }
+                                finally
+                                {
+                                    semaphore.Release();
+                                }
+                            }).ToArray();
+
+                            var results = await Task.WhenAll(tasks);
+                            
+                            // UI 스레드에서 한번에 추가 (성능 향상)
+                            foreach (var championInfo in results.Where(c => c != null))
+                            {
+                                AllChampions.Add(championInfo!);
+                                RemainedChampions.Add(championInfo!);
+                            }
+                            
+                            IsLoaded = true;
+                            _loggingService.LogInfo($"롤 챔피언 로드 완료! (총 {AllChampions.Count}개, 버전: {version})");
+                            
+                            // 성공 시 캐시에 저장
+                            await SaveToCacheAsync(version);
+                            return; // 성공 시 메서드 종료
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            _loggingService.LogError($"챔피언 로딩 오류: {ex.Message}");
-                            return null;
+                            _loggingService.LogError($"챔피언 API 요청 실패 (시도 {retry + 1}/{maxRetries}): {response.StatusCode}");
+                            if (retry < maxRetries - 1)
+                            {
+                                await Task.Delay(2000 * (retry + 1)); // 재시도 전 대기 (2초, 4초, 6초)
+                            }
                         }
-                        finally
-                        {
-                            semaphore.Release();
-                        }
-                    }).ToArray();
-
-                    var results = await Task.WhenAll(tasks);
-                    
-                    // UI 스레드에서 한번에 추가 (성능 향상)
-                    foreach (var championInfo in results.Where(c => c != null))
-                    {
-                        AllChampions.Add(championInfo!);
-                        RemainedChampions.Add(championInfo!);
                     }
-                    
-                    IsLoaded = true;
-                    _loggingService.LogInfo($"롤 챔피언 로드 완료! (총 {AllChampions.Count}개)");
+                    catch (HttpRequestException httpEx)
+                    {
+                        _loggingService.LogError($"네트워크 오류 (시도 {retry + 1}/{maxRetries}): {httpEx.Message}");
+                        if (retry < maxRetries - 1)
+                        {
+                            await Task.Delay(2000 * (retry + 1));
+                        }
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        _loggingService.LogError($"요청 타임아웃 (시도 {retry + 1}/{maxRetries})");
+                        if (retry < maxRetries - 1)
+                        {
+                            await Task.Delay(2000 * (retry + 1));
+                        }
+                    }
                 }
-                else
-                {
-                    _loggingService.LogError("챔피언 API 요청 실패");
-                }
+                
+                // 모든 재시도 실패 시 로컬 캐시 사용 시도
+                await LoadFromLocalCacheAsync();
             }
             catch (Exception ex)
             {
                 _loggingService.LogError($"챔피언 초기화 실패: {ex.Message}");
+                // 실패 시 로컬 캐시 시도
+                await LoadFromLocalCacheAsync();
+            }
+        }
+
+        private async Task<string?> GetLatestVersionAsync()
+        {
+            try
+            {
+                using var client = new HttpClient();
+                client.Timeout = TimeSpan.FromSeconds(5);
+                var response = await client.GetAsync("https://ddragon.leagueoflegends.com/api/versions.json");
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonString = await response.Content.ReadAsStringAsync();
+                    var versions = JArray.Parse(jsonString);
+                    return versions.FirstOrDefault()?.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"최신 버전 확인 실패: {ex.Message}");
+            }
+            return null;
+        }
+
+        private async Task LoadFromLocalCacheAsync()
+        {
+            try
+            {
+                _loggingService.LogInfo("로컬 캐시에서 챔피언 데이터 로드 시도...");
+                
+                string cacheDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NewMatchingBom", "cache");
+                string cacheFile = Path.Combine(cacheDir, "champions.json");
+                
+                if (File.Exists(cacheFile))
+                {
+                    string jsonString = await File.ReadAllTextAsync(cacheFile);
+                    JObject data = JObject.Parse(jsonString);
+                    
+                    var championsData = data["champions"]?.ToObject<List<JToken>>() ?? new List<JToken>();
+                    
+                    foreach (var champion in championsData)
+                    {
+                        string? nameKor = champion["nameKor"]?.ToString();
+                        string? nameEng = champion["nameEng"]?.ToString();
+                        string? imgUrl = champion["imgUrl"]?.ToString();
+                        
+                        if (!string.IsNullOrEmpty(nameKor) && !string.IsNullOrEmpty(nameEng))
+                        {
+                            // 캐시된 이미지 로드 시도
+                            BitmapImage? image = null;
+                            if (!string.IsNullOrEmpty(imgUrl))
+                            {
+                                image = await LoadImageAsync(imgUrl);
+                            }
+                            
+                            var championInfo = new ChampionInfo(nameKor, nameEng, imgUrl ?? "", image);
+                            AllChampions.Add(championInfo);
+                            RemainedChampions.Add(championInfo);
+                        }
+                    }
+                    
+                    TotalChampionCount = AllChampions.Count;
+                    IsLoaded = true;
+                    _loggingService.LogInfo($"로컬 캐시에서 {AllChampions.Count}개 챔피언 로드 완료");
+                }
+                else
+                {
+                    _loggingService.LogError("로컬 캐시 파일이 존재하지 않습니다.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"로컬 캐시 로드 실패: {ex.Message}");
+            }
+        }
+
+        private async Task SaveToCacheAsync(string version)
+        {
+            try
+            {
+                string cacheDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NewMatchingBom", "cache");
+                if (!Directory.Exists(cacheDir))
+                {
+                    Directory.CreateDirectory(cacheDir);
+                }
+                
+                string cacheFile = Path.Combine(cacheDir, "champions.json");
+                
+                var cacheData = new JObject
+                {
+                    ["version"] = version,
+                    ["timestamp"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                    ["champions"] = new JArray(
+                        AllChampions.Select(c => new JObject
+                        {
+                            ["nameKor"] = c.ChampionNameKor,
+                            ["nameEng"] = c.ChampionNameEng,
+                            ["imgUrl"] = c.ChampionImageUrl
+                        })
+                    )
+                };
+                
+                await File.WriteAllTextAsync(cacheFile, cacheData.ToString());
+                _loggingService.LogInfo($"챔피언 데이터를 캐시에 저장했습니다 (버전: {version})");
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogError($"캐시 저장 실패: {ex.Message}");
             }
         }
 
@@ -229,9 +377,33 @@ namespace NewMatchingBom.Services
         {
             try
             {
-                using var client = new HttpClient();
-                client.Timeout = TimeSpan.FromSeconds(5); // 5초 타임아웃 설정
-                byte[] imageData = await client.GetByteArrayAsync(imageUrl);
+                // 로컬 캐시 확인
+                string cacheDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NewMatchingBom", "cache", "images");
+                if (!Directory.Exists(cacheDir))
+                {
+                    Directory.CreateDirectory(cacheDir);
+                }
+                
+                string fileName = Path.GetFileName(new Uri(imageUrl).AbsolutePath);
+                string cachePath = Path.Combine(cacheDir, fileName);
+                
+                byte[] imageData;
+                
+                if (File.Exists(cachePath))
+                {
+                    // 캐시에서 로드
+                    imageData = await File.ReadAllBytesAsync(cachePath);
+                }
+                else
+                {
+                    // 웹에서 다운로드
+                    using var client = new HttpClient();
+                    client.Timeout = TimeSpan.FromSeconds(10); // 타임아웃 10초로 증가
+                    imageData = await client.GetByteArrayAsync(imageUrl);
+                    
+                    // 캐시에 저장
+                    await File.WriteAllBytesAsync(cachePath, imageData);
+                }
                 
                 using var ms = new MemoryStream(imageData);
                 BitmapImage bitmap = new BitmapImage();

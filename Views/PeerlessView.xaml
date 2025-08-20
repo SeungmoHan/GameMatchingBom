@@ -30,21 +30,13 @@
                         <!-- Top Controls -->
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- Search -->
-                            <hc:SearchBar Grid.Column="0" 
-                                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                                         hc:InfoElement.Placeholder="챔피언 이름으로 검색..."
-                                         Style="{StaticResource ModernTextBox}"
-                                         Height="40"
-                                         Margin="0,0,20,0"/>
-
                             <!-- Random Pick Section -->
-                            <Border Grid.Column="1" 
+                            <Border Grid.Column="0" 
                                    Background="{StaticResource CardBgBrush}"
                                    CornerRadius="8"
                                    Padding="15,8"
@@ -69,7 +61,7 @@
                             </Border>
 
                             <!-- Action Buttons -->
-                            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="15,0,0,0">
                                 <Button Content="↩️ 취소" 
                                        Command="{Binding RevertSelectedCommand}"
                                        Style="{StaticResource AccentButton}"
@@ -164,6 +156,7 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
@@ -171,7 +164,15 @@
                               Text="🏰 사용 가능한 챔피언" 
                               Style="{StaticResource SubtitleText}"/>
 
-                    <Border Grid.Row="1"
+                    <!-- Search Bar for Remained Champions -->
+                    <hc:SearchBar Grid.Row="1" 
+                                 Text="{Binding RemainedSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 hc:InfoElement.Placeholder="사용 가능한 챔피언 검색..."
+                                 Style="{StaticResource ModernTextBox}"
+                                 Height="35"
+                                 Margin="0,10,0,10"/>
+
+                    <Border Grid.Row="2"
                            Background="{StaticResource SurfaceBrush}"
                            CornerRadius="8"
                            Padding="15">
@@ -234,6 +235,7 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
@@ -252,12 +254,20 @@
                         </Border>
                     </StackPanel>
 
-                    <Border Grid.Row="1"
+                    <!-- Search Bar for Selected Champions -->
+                    <hc:SearchBar Grid.Row="1" 
+                                 Text="{Binding SelectedSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 hc:InfoElement.Placeholder="선택된 챔피언 검색..."
+                                 Style="{StaticResource ModernTextBox}"
+                                 Height="35"
+                                 Margin="0,10,0,10"/>
+
+                    <Border Grid.Row="2"
                            Background="{StaticResource SurfaceBrush}"
                            CornerRadius="8"
                            Padding="10">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <ItemsControl ItemsSource="{Binding SelectedChampions}">
+                            <ItemsControl ItemsSource="{Binding FilteredSelectedChampions}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Border Background="{StaticResource SuccessBrush}" 
@@ -314,6 +324,7 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
@@ -333,13 +344,21 @@
                         </Border>
                     </StackPanel>
 
-                    <Border Grid.Row="1"
+                    <!-- Search Bar for Used Champions -->
+                    <hc:SearchBar Grid.Row="1" 
+                                 Text="{Binding UsedSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 hc:InfoElement.Placeholder="사용된 챔피언 검색..."
+                                 Style="{StaticResource ModernTextBox}"
+                                 Height="35"
+                                 Margin="0,10,0,10"/>
+
+                    <Border Grid.Row="2"
                            Background="{StaticResource SurfaceBrush}"
                            CornerRadius="8"
                            Padding="10"
                            Margin="0,15,0,15">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <ItemsControl ItemsSource="{Binding UsedChampions}">
+                            <ItemsControl ItemsSource="{Binding FilteredUsedChampions}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Border Background="{StaticResource CardBgBrush}" 
@@ -388,7 +407,7 @@
                         </ScrollViewer>
                     </Border>
 
-                    <Button Grid.Row="2" 
+                    <Button Grid.Row="3" 
                            Content="🔄 전체 복구" 
                            Command="{Binding RevertUsedCommand}"
                            Style="{StaticResource WarningButton}"
