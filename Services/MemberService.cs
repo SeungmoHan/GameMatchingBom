@@ -202,10 +202,22 @@ namespace NewMatchingBom.Services
             // 캐싱된 데이터만 사용 (Google Sheets에서 매번 로드하지 않음)
             var records = _cachedPlayRecords ?? new List<PlayRecord>();
             
-            // Dictionary를 사용하여 그룹핑 성능 향상
+            // 같은 날짜에 플레이한 데이터 중 최고 점수만 추출
+            var maxPointsByNameAndDate = records
+                .GroupBy(r => new { r.Name, r.Date })
+                .Select(g => new PlayRecord
+                {
+                    Name = g.Key.Name,
+                    Date = g.Key.Date,
+                    Point = g.Max(r => r.Point),
+                    Type = g.OrderByDescending(r => r.Point).First().Type
+                })
+                .ToList();
+            
+            // 플레이어별 총 점수 계산
             var pointsByName = new Dictionary<string, int>();
             
-            foreach (var record in records)
+            foreach (var record in maxPointsByNameAndDate)
             {
                 if (pointsByName.TryGetValue(record.Name, out var currentPoints))
                 {

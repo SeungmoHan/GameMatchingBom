@@ -63,9 +63,14 @@ namespace NewMatchingBom.ViewModels
                     MemberRecords.Add(record);
                 }
 
-                // 통계 계산
-                TotalGames = memberRecords.Count;
-                TotalPoints = memberRecords.Sum(r => r.Point);
+                // 같은 날짜별 최고 점수만 반영하여 통계 계산
+                var maxPointsByDate = memberRecords
+                    .GroupBy(r => r.Date)
+                    .Select(g => g.OrderByDescending(r => r.Point).First())
+                    .ToList();
+                
+                TotalGames = maxPointsByDate.Count;
+                TotalPoints = maxPointsByDate.Sum(r => r.Point);
 
                 _loggingService.LogInfo($"{memberName} 기록 로딩 완료: {TotalGames}게임, {TotalPoints}점");
             }
